@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PaintMath - buy the right cans, not the round number</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:#101513; color:#e9f0ec; min-height:100vh; }
+  .wrap { max-width:720px; margin:0 auto; padding:64px 24px; }
+  .tag { color:#6fd3a7; font-weight:600; letter-spacing:2px; text-transform:uppercase; font-size:12px; }
+  h1 { font-size:clamp(34px,6vw,52px); line-height:1.1; margin:14px 0 18px; }
+  h1 span { color:#6fd3a7; }
+  p.lead { font-size:18px; color:#9fb3a9; max-width:560px; line-height:1.6; }
+  .cta { display:inline-block; margin-top:32px; background:#6fd3a7; color:#0a2018; font-weight:700; padding:14px 32px; border-radius:10px; text-decoration:none; font-size:16px; }
+  .cta:hover { filter:brightness(1.1); }
+  .feats { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-top:56px; }
+  .feat { background:#152019; border:1px solid #2a4034; border-radius:12px; padding:20px; }
+  .feat b { display:block; margin-bottom:6px; color:#fff; }
+  .feat p { color:#87998f; font-size:14px; line-height:1.5; }
+  .foot { margin-top:56px; color:#5c6c64; font-size:13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="tag">PaintMath</div>
+  <h1>You need 7.3 liters. The shelf sells <span>2.5, 5 and 10.</span> What do you actually buy?</h1>
+  <p class="lead">Guessing paint means a second trip or a garage of half-empty cans. PaintMath measures the room - walls minus doors and windows, plus the ceiling if you're brave - applies coats and waste, then finds the cheapest combination of real can sizes that covers the job.</p>
+  <a class="cta" href="app.html">Price my room</a>
+  <div class="feats">
+    <div class="feat"><b>Honest area</b><p>Walls minus every door and window, ceiling optional. Two coats and a waste margin, because one coat is a lie.</p></div>
+    <div class="feat"><b>Can tetris</b><p>Two 2.5L cans at $20 lose to one 5L at $38 - until they don't. The cheapest combo is computed, not assumed.</p></div>
+    <div class="feat"><b>Leftover shown</b><p>See exactly how much paint you're buying for the garage shelf, and what each square meter costs.</p></div>
+  </div>
+  <div class="foot">PaintMath - a tiny tool from the App Factory.</div>
+</div>
+</body>
+</html>
