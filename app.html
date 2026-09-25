@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PaintMath - cans to buy</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:#101513; color:#e9f0ec; min-height:100vh; }
+  .wrap { max-width:860px; margin:0 auto; padding:28px 20px 80px; }
+  header { display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; }
+  header h1 { font-size:22px; } header h1 span { color:#6fd3a7; }
+  header a { color:#87998f; text-decoration:none; font-size:14px; }
+  .card { background:#152019; border:1px solid #2a4034; border-radius:12px; padding:18px; margin-bottom:18px; }
+  label { font-size:12px; color:#87998f; display:block; margin-bottom:4px; }
+  input { background:#101513; border:1px solid #33503f; border-radius:8px; color:#e9f0ec; padding:9px 10px; font-size:14px; width:100%; }
+  button { background:#6fd3a7; border:none; color:#0a2018; font-weight:700; padding:11px 22px; border-radius:9px; font-size:14px; cursor:pointer; }
+  .row4 { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px; margin-bottom:12px; }
+  .row3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:12px; }
+  h3 { font-size:14px; color:#b8c8c0; margin-bottom:10px; }
+  .chk { display:flex; align-items:center; gap:8px; font-size:13px; color:#b8c8c0; margin-top:4px; }
+  .chk input { width:auto; }
+  .verdict { background:#12241a; border:1px solid #2a4a38; border-radius:10px; padding:14px 16px; margin-bottom:14px; font-size:15px; line-height:1.6; }
+  .verdict b { color:#6fd3a7; }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; }
+  .stat { background:#101513; border:1px solid #2a4034; border-radius:10px; padding:12px; }
+  .stat .v { font-size:20px; font-weight:700; color:#fff; }
+  .stat .k { font-size:11px; color:#87998f; margin-top:2px; line-height:1.4; }
+  .err { color:#ff8a8a; font-size:13px; margin-top:8px; }
+  .note { color:#5c6c64; font-size:12px; margin-top:10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><h1>Paint<span>Math</span></h1><a href="index.html">home</a></header>
+
+  <div class="card">
+    <h3>The room</h3>
+    <div class="row4">
+      <div><label>Length (m)</label><input id="length" type="number" step="0.1" value="4"></div>
+      <div><label>Width (m)</label><input id="width" type="number" step="0.1" value="3"></div>
+      <div><label>Height (m)</label><input id="height" type="number" step="0.05" value="2.6"></div>
+      <div><label>&nbsp;</label><div class="chk"><input id="ceiling" type="checkbox"> paint ceiling too</div></div>
+    </div>
+    <div class="row4">
+      <div><label>Doors</label><input id="doors" type="number" value="1"></div>
+      <div><label>Windows</label><input id="windows" type="number" value="1"></div>
+      <div><label>Coats</label><input id="coats" type="number" value="2"></div>
+      <div><label>Waste margin (%)</label><input id="waste" type="number" value="10"></div>
+    </div>
+    <div class="row3">
+      <div><label>Coverage (m2 per liter)</label><input id="coverage" type="number" step="0.5" value="10"></div>
+      <div></div><div></div>
+    </div>
+    <h3>Cans on the shelf (size L / price $)</h3>
+    <div class="row3">
+      <div><label>Can 1</label><div style="display:flex;gap:8px;"><input id="s1" type="number" step="0.25" value="0.75"><input id="p1" type="number" step="0.5" value="9"></div></div>
+      <div><label>Can 2</label><div style="display:flex;gap:8px;"><input id="s2" type="number" step="0.25" value="2.5"><input id="p2" type="number" step="0.5" value="22"></div></div>
+      <div><label>Can 3</label><div style="display:flex;gap:8px;"><input id="s3" type="number" step="0.25" value="5"><input id="p3" type="number" step="0.5" value="39"></div></div>
+    </div>
+    <button id="go">Calculate</button>
+    <div class="err" id="err"></div>
+  </div>
+
+  <div id="out"></div>
+</div>
+<script src="engine.js"></script>
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const IDS = ['length','width','height','doors','windows','coats','waste','coverage','s1','p1','s2','p2','s3','p3'];
+  function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  function usd(x){ return '$' + Math.round(x).toLocaleString('en-US'); }
+
+  function calc(){
+    $('err').textContent = '';
+    const st = { ceiling: $('ceiling').checked };
+    IDS.forEach(function(id){ st[id] = $(id).value; });
+    try { localStorage.setItem('paintmath', JSON.stringify(st)); } catch(e) {}
+    let p;
+    try {
+      p = PaintMathEngine.plan({
+        length: st.length, width: st.width, height: st.height, doors: st.doors, windows: st.windows,
+        coats: st.coats, wastePct: st.waste, coverage: st.coverage, ceiling: st.ceiling,
+        canSizes: [{ size: st.s1, price: st.p1 }, { size: st.s2, price: st.p2 }, { size: st.s3, price: st.p3 }]
+      });
+    } catch(e) { $('err').textContent = e.message; $('out').innerHTML = ''; return; }
+
+    const comboTxt = Object.keys(p.combo.cans).map(function(k){ return p.combo.cans[k] + ' x ' + k + 'L'; }).join(' + ');
+    const v = 'You need <b>' + p.liters + ' L</b> for ' + p.netArea + ' m2 painted (' + st.coats + ' coats). '
+      + 'Cheapest buy: <b>' + esc(comboTxt) + '</b> = ' + p.boughtLiters + ' L for <b>' + usd(p.totalCost) + '</b>'
+      + (p.leftoverLiters > 0.05 ? ', leaving ' + p.leftoverLiters + ' L for touch-ups.' : ', almost nothing wasted.');
+
+    $('out').innerHTML = '<div class="verdict">' + v + '</div><div class="card"><div class="stats">'
+      + '<div class="stat"><div class="v">' + p.netArea + ' m2</div><div class="k">painted area (walls ' + p.wallArea + ' - openings ' + p.openingsArea + (p.ceilingArea ? ' + ceiling ' + p.ceilingArea : '') + ')</div></div>'
+      + '<div class="stat"><div class="v">' + p.liters + ' L</div><div class="k">paint needed incl. ' + st.waste + '% waste</div></div>'
+      + '<div class="stat"><div class="v">' + usd(p.totalCost) + '</div><div class="k">total spend</div></div>'
+      + '<div class="stat"><div class="v">' + (p.costPerM2 !== null ? '$' + p.costPerM2 : '-') + '</div><div class="k">cost per m2</div></div>'
+      + '<div class="stat"><div class="v">' + p.leftoverLiters + ' L</div><div class="k">leftover for the shelf</div></div>'
+      + '</div><div class="note">Doors count as 1.9 m2, windows 1.5 m2. Coverage from the can label; two coats is the honest default.</div></div>';
+  }
+
+  $('go').onclick = calc;
+  document.querySelectorAll('input').forEach(function(el){ el.addEventListener('input', calc); });
+  try {
+    const st = JSON.parse(localStorage.getItem('paintmath') || 'null');
+    if (st) { IDS.forEach(function(id){ if (st[id] !== undefined) $(id).value = st[id]; }); $('ceiling').checked = !!st.ceiling; }
+  } catch(e) {}
+  calc();
+})();
+</script>
+</body>
+</html>
